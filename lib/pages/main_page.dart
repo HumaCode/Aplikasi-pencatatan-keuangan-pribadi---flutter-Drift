@@ -1,5 +1,7 @@
 import 'package:calendar_appbar/calendar_appbar.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:uangkooh/pages/category_page.dart';
 import 'package:uangkooh/pages/home_page.dart';
 
 class MainPage extends StatefulWidget {
@@ -10,26 +12,56 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  final List<Widget> _childern = [
+    HomePage(),
+    CategoryPage(),
+  ];
+  int currentIndex = 0;
+
+  void onTapTapped(int index) {
+    setState(() {
+      currentIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CalendarAppBar(
-        backButton: false,
-        accent: Colors.green,
-        locale: 'id',
-        onDateChanged: (value) => print(value),
-        firstDate: DateTime.now().subtract(Duration(days: 140)),
-        lastDate: DateTime.now(),
-      ),
+      appBar: (currentIndex == 0)
+          ? CalendarAppBar(
+              backButton: false,
+              accent: Colors.green,
+              locale: 'id',
+              onDateChanged: (value) => print(value),
+              firstDate: DateTime.now().subtract(Duration(days: 140)),
+              lastDate: DateTime.now(),
+            )
+          : PreferredSize(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 39,
+                  horizontal: 16,
+                ),
+                child: Text(
+                  'Kategori',
+                  style: GoogleFonts.montserrat(
+                      fontSize: 25, fontWeight: FontWeight.w500),
+                ),
+              ),
+              preferredSize: Size.fromHeight(100),
+            ),
 
       // body
-      body: const HomePage(),
+      body: _childern[currentIndex],
 
       // floating button
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.add),
+      floatingActionButton: Visibility(
+        visible: (currentIndex == 0) ? true : false,
+        child: FloatingActionButton(
+          onPressed: () {},
+          backgroundColor: Colors.green,
+          child: const Icon(Icons.add),
+        ),
       ),
 
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -40,12 +72,16 @@ class _MainPageState extends State<MainPage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                onTapTapped(0);
+              },
               icon: const Icon(Icons.home),
             ),
             const SizedBox(width: 20),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                onTapTapped(1);
+              },
               icon: const Icon(Icons.list),
             ),
           ],
