@@ -1,5 +1,6 @@
 import 'package:calendar_appbar/calendar_appbar.dart';
 import 'package:flutter/material.dart';
+import 'package:uangkooh/pages/home_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -20,6 +21,9 @@ class _MainPageState extends State<MainPage> {
         firstDate: DateTime.now().subtract(Duration(days: 140)),
         lastDate: DateTime.now(),
       ),
+
+      // body
+      body: const HomePage(),
 
       // floating button
       floatingActionButton: FloatingActionButton(
