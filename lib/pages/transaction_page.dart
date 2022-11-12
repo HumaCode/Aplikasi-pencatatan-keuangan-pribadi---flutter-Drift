@@ -116,7 +116,9 @@ class _TransactionPageState extends State<TransactionPage> {
                     } else {
                       if (snapshot.hasData) {
                         if (snapshot.data!.length > 0) {
-                          selectedCategory = snapshot.data!.first;
+                          selectedCategory = selectedCategory == null
+                              ? snapshot.data!.first
+                              : selectedCategory;
                           // print(snapshot.data);
                           return Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -140,12 +142,20 @@ class _TransactionPageState extends State<TransactionPage> {
                           );
                         } else {
                           return Center(
-                            child: Text('Data kosong'),
+                            child: Text(
+                              'Data kosong',
+                              style: GoogleFonts.montserrat(
+                                  fontSize: 30, fontWeight: FontWeight.w500),
+                            ),
                           );
                         }
                       } else {
                         return Center(
-                          child: Text('Tidak ada data'),
+                          child: Text(
+                            'Tidak ada data',
+                            style: GoogleFonts.montserrat(
+                                fontSize: 30, fontWeight: FontWeight.w500),
+                          ),
                         );
                       }
                     }
@@ -199,6 +209,13 @@ class _TransactionPageState extends State<TransactionPage> {
                       DateTime.parse(dateController.text),
                       deskripsiController.text,
                       selectedCategory!.id,
+                    );
+
+                    Navigator.pop(context, true);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Berhasil menambah transaksi'),
+                      ),
                     );
                   },
                   child: Text(
