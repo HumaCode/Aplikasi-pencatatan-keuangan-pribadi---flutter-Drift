@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uangkooh/pages/models/database.dart';
 import 'package:uangkooh/pages/models/transaction_with_category.dart';
+import 'package:uangkooh/pages/transaction_page.dart';
 
 class HomePage extends StatefulWidget {
   final DateTime selectedDate;
@@ -162,9 +163,36 @@ class _HomePageState extends State<HomePage> {
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.delete),
+                                    IconButton(
+                                        onPressed: () {
+                                          database.deleteTransactionRepo(
+                                              snapshot
+                                                  .data![index].transaction.id);
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  'Berhasil menghapus data'),
+                                            ),
+                                          );
+                                          setState(() {});
+                                        },
+                                        icon: Icon(Icons.delete)),
                                     const SizedBox(width: 10),
-                                    Icon(Icons.edit),
+                                    IconButton(
+                                      onPressed: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                TransactionPage(
+                                              transactionWithCategory:
+                                                  snapshot.data![index],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      icon: Icon(Icons.edit),
+                                    ),
                                   ],
                                 ),
                               ),

@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:uangkooh/pages/models/database.dart';
+import 'package:uangkooh/pages/models/transaction_with_category.dart';
 
 class TransactionPage extends StatefulWidget {
-  const TransactionPage({super.key});
+  final TransactionWithCategory? transactionWithCategory;
+  const TransactionPage({
+    super.key,
+    this.transactionWithCategory,
+  });
 
   @override
   State<TransactionPage> createState() => _TransactionPageState();
@@ -43,9 +48,39 @@ class _TransactionPageState extends State<TransactionPage> {
     return await database.getAllCategoryRepo(type);
   }
 
+  // Menampilkan data transaksi
+  void updateTransaction(TransactionWithCategory transactionWithCategory) {
+    jumlahController.text =
+        transactionWithCategory.transaction.amount.toString();
+    deskripsiController.text = transactionWithCategory.transaction.name;
+    dateController.text = DateFormat("yyyy-MM-dd")
+        .format(transactionWithCategory.transaction.transaction_date);
+    type = transactionWithCategory.category.type;
+
+    type == 2 ? pengeluaran = true : pengeluaran = false;
+    selectedCategory = transactionWithCategory.category;
+  }
+
+  // update transaksi
+  Future update(int transactionId, int amount, int categoryId,
+      DateTime transactionDate, String nameDetail) async {
+    return await database.updateTransactionRepo(
+      transactionId,
+      amount,
+      categoryId,
+      transactionDate,
+      nameDetail,
+    );
+  }
+
   @override
   void initState() {
-    type = 2;
+    // jika mengirim parameter maka jalankan function update
+    if (widget.transactionWithCategory != null) {
+      updateTransaction(widget.transactionWithCategory!);
+    } else {
+      type = 2;
+    }
     super.initState();
   }
 
@@ -200,26 +235,43 @@ class _TransactionPageState extends State<TransactionPage> {
               const SizedBox(height: 25),
               Center(
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     // print(jumlahController.text);
                     // print(dateController.text);
                     // print(deskripsiController.text);
-                    insert(
-                      int.parse(jumlahController.text),
-                      DateTime.parse(dateController.text),
-                      deskripsiController.text,
-                      selectedCategory!.id,
-                    );
+                    widget.transactionWithCategory == null
+                        ? await insert(
+                            int.parse(jumlahController.text),
+                            DateTime.parse(dateController.text),
+                            deskripsiController.text,
+                            selectedCategory!.id,
+                          )
+                        : await update(
+                            widget.transactionWithCategory!.transaction.id,
+                            int.parse(jumlahController.text),
+                            selectedCategory!.id,
+                            DateTime.parse(dateController.text),
+                            deskripsiController.text,
+                          );
 
                     Navigator.pop(context, true);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Berhasil menambah transaksi'),
-                      ),
-                    );
+                    // setState(() {});
+                    widget.transactionWithCategory == null
+                        ? ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Berhasil menambah transaksi'),
+                            ),
+                          )
+                        : ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Berhasil mengubah transaksi'),
+                            ),
+                          );
                   },
                   child: Text(
-                    'Simpan Data',
+                    widget.transactionWithCategory == null
+                        ? 'Simpan Data'
+                        : 'Ubah Data',
                     style: GoogleFonts.montserrat(
                         fontSize: 20, fontWeight: FontWeight.w500),
                   ),

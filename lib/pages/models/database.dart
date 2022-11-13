@@ -58,6 +58,24 @@ class AppDb extends _$AppDb {
       }).toList();
     });
   }
+
+  // update transaksi
+  Future updateTransactionRepo(int id, int amount, int categoryId,
+      DateTime transactionDate, String nameDetail) async {
+    return (update(transactions)..where((tbl) => tbl.id.equals(id))).write(
+      TransactionsCompanion(
+        name: Value(nameDetail),
+        amount: Value(amount),
+        category_id: Value(categoryId),
+        transaction_date: Value(transactionDate),
+      ),
+    );
+  }
+
+  // delete transaksi
+  Future deleteTransactionRepo(int id) async {
+    return (delete(transactions)..where((tbl) => tbl.id.equals(id))).go();
+  }
 }
 
 LazyDatabase _openConnection() {
